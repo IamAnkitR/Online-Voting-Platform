@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const app = require("./app.js");
 const express = require("express");
 const path = require("path");
