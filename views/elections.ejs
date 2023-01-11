@@ -28,20 +28,21 @@
       <% if (elections.length === 0) { %>
         <h1 class="text-2xl flex justify-center text-gray-600">Press 'Create' to create your first election</h1>
     <% } %>
+   
       <% for (var i=0; i<elections.length; i++) { %>
-        <div class="flex justify-between gap-6">
-            <li class="font-bold text-xl list-decimal">
+        <hr>
+        <div class="text-center">
+            <div class="font-bold text-xl">
               <%= elections[i].name %>
-            </li>
+            </div>
+        </div>    
           
           <div class="flex gap-4 justify-center items-center">
-            <a href="/election/<%= elections[i].id %>">Details</a>
-            <a href="/election/<%= elections[i].id %>/edit"> Edit</a>
-            <div onclick="deleteElection('<%= elections[i].id %>')"><i
-                class="cursor-pointer fa fa-trash transition duration-200"></i></div>
-          </div>
+            <button class="bg-inherit hover:bg-teal-800 border-2  rounded-lg text-white p-1 mr-4 ">  <a href="/election/<%= elections[i].id %>">Details</a></button>
+            <button class="bg-inherit hover:bg-teal-800 border-2  rounded-lg text-white p-1 mr-4 "> <a href="/election/<%= elections[i].id %>/edit"> Edit</a></button>
+            <button class="bg-inherit hover:bg-red-800 border-2  rounded-lg text-white p-1 mr-4 "> <div onclick="deleteElection('<%= elections[i].id %>')">Delete</button>
         </div>
-        <% } %>
+        <% } %> 
     </div>
   </div>
 </body>

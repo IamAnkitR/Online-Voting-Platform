@@ -127,12 +127,25 @@ app.delete(
   }
 );
 
+app.get(
+  "/election",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    const loggedInAdminID = req.user.id;
+    const elections = await Election.findAll({
+      where: { adminID: loggedInAdminID },
+    });
+
+    return res.json({ elections });
+  }
+);
+
 app.post(
   "/election",
   connectEnsureLogin.ensureLoggedIn(),
   async (req, res) => {
     if (req.body.name===false) {
-      return res.flash("Enter election name!");
+      return res.flash("Election name can't be empty");
     }
 
     const loggedInAdminID = req.user.id;
