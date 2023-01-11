@@ -1,0 +1,15 @@
+{
+  "name": "online-voting-platform",
+  "version": "1.0.0",
+  "description": "An online voting app which can be used to conduct various elections",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ankit Rawat",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^3.1.8",
+    "express": "^4.18.2"
+  }
+}
