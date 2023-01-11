@@ -11,6 +11,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Election.belongsTo(models.Admin, {
+        foreignKey: "adminID",
+      });
     }
   }
   Election.init({
