@@ -1,0 +1,49 @@
+<html>
+
+<head>
+  <title>VoteMeter</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+    integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script>
+    function deleteElection(id) {
+      //fetching elections
+      fetch(`/election/${id}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      }).then((res) => {
+        if (res.ok) {
+          window.location.reload();
+        }
+      })
+        .catch((err) => console.log(err));
+    }
+  </script>
+</head>
+
+<body class="bg-slate-800 text-zinc-50">
+  <div class="flex flex-col justify-center items-center p-4">
+    <div class="flex flex-col gap-4 justify-center w-full p-4">
+      <% if (elections.length === 0) { %>
+        <h1 class="text-2xl flex justify-center text-gray-600">Press 'Create' to create your first election</h1>
+    <% } %>
+      <% for (var i=0; i<elections.length; i++) { %>
+        <div class="flex justify-between gap-6">
+            <li class="font-bold text-xl list-decimal">
+              <%= elections[i].name %>
+            </li>
+          
+          <div class="flex gap-4 justify-center items-center">
+            <a href="/election/<%= elections[i].id %>">Details</a>
+            <a href="/election/<%= elections[i].id %>/edit"> Edit</a>
+            <div onclick="deleteElection('<%= elections[i].id %>')"><i
+                class="cursor-pointer fa fa-trash transition duration-200"></i></div>
+          </div>
+        </div>
+        <% } %>
+    </div>
+  </div>
+</body>
+
+</html>

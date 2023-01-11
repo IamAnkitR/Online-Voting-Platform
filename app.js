@@ -2,14 +2,15 @@
 const express = require("express");
 const app = express();
 const path = require("path");
-const { Admin } = require("./models");
+const { Admin, Election } = require("./models");
 const bcrypt = require("bcrypt");
+const localStrategy = require("passport-local");
+const passport = require("passport");
 var cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const connectEnsureLogin = require("connect-ensure-login");
 const session = require("express-session");
-const localStrategy = require("passport-local");
-const passport = require("passport");
+
 const flash = require("connect-flash");
 
 const saltRounds = 10;
@@ -81,7 +82,6 @@ passport.deserializeUser((id, done) => {
     });
 });
 
-// home page
 app.get("/", (req, res) => {
   res.render("index");
 });
@@ -102,11 +102,60 @@ app.get(
     const loggedInAdminID = req.user.id;
 
     const admin = await Admin.findByPk(loggedInAdminID);
-    res.render("newHome", { username: admin.name });
+    const elections = await Election.findAll({
+      where: { adminID: req.user.id },
+    }
+    );
+    res.render("home", {
+      username: admin.name,
+      elections: elections,
+    });
   }
 );
 
-// create new admin user
+app.delete(
+  "/election/:id",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    try {
+      await Election.destroy({ where: { id: req.params.id } });
+      return res.json({ ok: true });
+    } catch (error) {
+      console.log(error);
+      res.send(error);
+    }
+  }
+);
+
+app.post(
+  "/election",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    if (req.body.name===false) {
+      return res.flash("Enter election name!");
+    }
+
+    const loggedInAdminID = req.user.id;
+    try {
+      await Election.add(loggedInAdminID, req.body.name);
+      res.redirect("/index");
+    } catch (error) {
+      console.log(error);
+      res.send(error);
+    }
+  }
+);
+
+app.get(
+  "/election/create",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    const loggedInAdminID = request.user.id;
+    const admin = await Admin.findByPk(loggedInAdminID);
+    response.render("createElection", { username: admin.name });
+  }
+);
+
 app.post("/users", async (req, res) => {
   const hashpwd = await bcrypt.hash(req.body.password, saltRounds);
   try {

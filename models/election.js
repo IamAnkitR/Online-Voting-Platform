@@ -15,6 +15,15 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "adminID",
       });
     }
+    static async add(adminID, name) {
+      const res = await Election.create({
+        adminID: adminID,
+        name: name,
+        started: false,
+        ended: false,
+      });
+      return res;
+    }
   }
   Election.init({
     name: DataTypes.STRING,
