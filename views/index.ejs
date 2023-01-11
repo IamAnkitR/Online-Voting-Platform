@@ -1,3 +1,44 @@
-<h1>
-    Hello World
-</h1>
+<html>
+  <head>
+    <title>Online-Voting-Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-slate-800 text-zinc-50">
+    <div class="flex justify-center">
+      <%- include ('header') %>
+    </div>
+    <div class="flex flex-col justify-center items-center p-4">
+      <div class="flex flex-col justify-center md:w-2/5 w-full">
+        <p class="font-semi-bold text-xl pt-4 text-center">Welcome to Online-Voting-Platform</p>
+        <p class="font-semi-bold text-xl pt-4">
+          An online voting app which can be used to conduct various elections
+        </p>
+        <div class="flex justify-center">
+          <div
+            class="flex flex-col justify-center items-center md:w-2/5 w-full"
+          >
+            <div
+              class="flex flex-col justify-center pt-4 items-center pt-8 w-full"
+            >
+              <b>Existing User?</b>
+              <a
+                class="bg-inherit border-2 border-black flex justify-center hover:bg-teal-800  p-1 rounded-lg w-full text-inherit"
+                href="/signin"
+                >Sign-In</a
+              >
+            </div>
+            <div class="flex flex-col justify-center pt-4 items-center w-full">
+              <b>New User?</b>
+              <a
+                class="bg-inherit border-2 w-full flex justify-center border-black hover:bg-teal-800 p-1 rounded-lg"
+                href="/signup"
+                >Sign-Up</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="p-3"><%- include ('footer') %></div> 
+    </div>
+  </body>
+</html>
