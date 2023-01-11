@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "adminID",
       });
     }
+
     static createAdmin(name, email, password) {
       return this.create({
         name,
@@ -23,7 +24,6 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
   }
-  
   Admin.init({
     name: DataTypes.STRING,
     email: DataTypes.STRING,
