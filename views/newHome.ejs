@@ -1,0 +1,38 @@
+<html>
+  <head>
+    <title>Online-Voting-Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+      integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body class="bg-slate-800 text-zinc-50 text-center">
+    <div class="flex justify-center">
+      <%- include('header') %>
+      </div>
+        <div class="text-center text-xl font-semibold">
+          Welcome, 
+          <%= username %>
+        </div>
+        
+    <div class="flex justify-center p-4">
+      <div class="flex flex-col justify-center md:w-2/5 w-full">
+        <a
+        class="text-red-500 hover:bg-red-200 transition duration-200 border-2 border-red-500 p-2 rounded-lg font-bold"
+        href="/signout"
+        >Sign Out</a
+      >   
+      </div>
+    </div>
+    <div class="pt-6">
+      <p class="font-bold text-2xl underline">Your Elections</p>
+    </div>
+    <div >
+      <%- include ('footer.ejs') %>
+    </div>
+  </body>
+</html>

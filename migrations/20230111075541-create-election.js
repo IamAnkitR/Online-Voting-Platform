@@ -15,9 +15,6 @@ module.exports = {
       started: {
         type: Sequelize.BOOLEAN
       },
-      ended: {
-        type: Sequelize.BOOLEAN
-      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
