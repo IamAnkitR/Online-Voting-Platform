@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Election extends Model {
     /**
@@ -26,13 +24,16 @@ module.exports = (sequelize, DataTypes) => {
       return res;
     }
   }
-  Election.init({
-    name: DataTypes.STRING,
-    started: DataTypes.BOOLEAN,
-    ended: DataTypes.BOOLEAN
-  }, {
-    sequelize,
-    modelName: 'Election',
-  });
+  Election.init(
+    {
+      name: DataTypes.STRING,
+      started: DataTypes.BOOLEAN,
+      ended: DataTypes.BOOLEAN,
+    },
+    {
+      sequelize,
+      modelName: "Election",
+    }
+  );
   return Election;
 };

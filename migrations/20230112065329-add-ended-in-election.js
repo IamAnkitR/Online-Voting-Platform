@@ -21,6 +21,8 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-    await queryInterface.removeColumn("Elections", "ended");
+    await queryInterface.addColumn("Elections", "ended", {
+      type: Sequelize.DataTypes.BOOLEAN,
+    });
   }
 };
