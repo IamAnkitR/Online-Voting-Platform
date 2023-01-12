@@ -1,5 +1,7 @@
-"use strict";
-const { Model } = require("sequelize");
+'use strict';
+const {
+  Model
+} = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Election extends Model {
     /**
@@ -13,27 +15,14 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "adminID",
       });
     }
-
-    static async add(adminID, name) {
-      const res = await Election.create({
-        adminID: adminID,
-        name: name,
-        started: false,
-        ended: false,
-      });
-      return res;
-    }
   }
-  Election.init(
-    {
-      name: DataTypes.STRING,
-      started: DataTypes.BOOLEAN,
-      ended: DataTypes.BOOLEAN,
-    },
-    {
-      sequelize,
-      modelName: "Election",
-    }
-  );
+  Election.init({
+    name: DataTypes.STRING,
+    started: DataTypes.BOOLEAN,
+    ended: DataTypes.BOOLEAN
+  }, {
+    sequelize,
+    modelName: 'Election',
+  });
   return Election;
 };
