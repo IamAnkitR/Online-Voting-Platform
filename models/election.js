@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       const res = await Election.create({
         adminID: adminID,
         name: name,
-        launched: false,
+        started: false,
         ended: false,
       });
       return res;

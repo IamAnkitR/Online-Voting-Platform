@@ -14,7 +14,10 @@
     "dialect": "postgres"
   },
   "production": {
-    "use_env_variable": "DATABASE_URL",
+    "username": "postgres",
+    "password": "ankit",
+    "database": "ovp_db_prod",
+    "host": "127.0.0.1",
     "dialect": "postgres"
   }
 }
