@@ -1,15 +1,15 @@
 <html>
 
 <head>
-  <title>VoteMeter</title>
+  <title>Online-Voting-Platform</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
     integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   <script>
+    //delete election
     function deleteElection(id) {
-      //fetching elections
-      fetch(`/election/${id}`, {
+      fetch(`/elections/${id}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
       }).then((res) => {
@@ -25,24 +25,25 @@
 <body class="bg-slate-800 text-zinc-50">
   <div class="flex flex-col justify-center items-center p-4">
     <div class="flex flex-col gap-4 justify-center w-full p-4">
-      <% if (elections.length === 0) { %>
-        <h1 class="text-2xl flex justify-center text-gray-600">Press 'Create' to create your first election</h1>
-    <% } %>
-   
-      <% for (var i=0; i<elections.length; i++) { %>
-        <hr>
-        <div class="text-center">
-            <div class="font-bold text-xl">
-              <%= elections[i].name %>
+    
+          <h1 class="text-2xl flex justify-center font-bold text-white-600">Number of elections = <%= elections.length %></h1>
+
+          <% for (var i=0; i<elections.length; i++) { %>
+            <hr>
+            <div class="text-center">
+              <div class="font-bold text-xl">
+                <%= elections[i].name %>
+              </div>
             </div>
-        </div>    
-          
-          <div class="flex gap-4 justify-center items-center">
-            <button class="bg-inherit hover:bg-teal-800 border-2  rounded-lg text-white p-1 mr-4 ">  <a href="/election/<%= elections[i].id %>">Details</a></button>
-            <button class="bg-inherit hover:bg-teal-800 border-2  rounded-lg text-white p-1 mr-4 "> <a href="/election/<%= elections[i].id %>/edit"> Edit</a></button>
-            <button class="bg-inherit hover:bg-red-800 border-2  rounded-lg text-white p-1 mr-4 "> <div onclick="deleteElection('<%= elections[i].id %>')">Delete</button>
-        </div>
-        <% } %> 
+
+            <div class="flex gap-4 justify-center items-center">
+              <button class="bg-inherit hover:bg-teal-800 border-2  rounded-lg text-white p-1 mr-4 "> <a
+                  href="/elections/<%= elections[i].id %>">Ballot</a></button>
+              <button class="bg-inherit hover:bg-red-800 border-2  rounded-lg text-white p-1 mr-4 ">
+                <div onclick="deleteElection('<%= elections[i].id %>')">Delete
+              </button>
+            </div>
+            <% } %>
     </div>
   </div>
 </body>

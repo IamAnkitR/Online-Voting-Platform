@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Election extends Model {
+  class Elections extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,12 +11,16 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Election.belongsTo(models.Admin, {
+      Elections.belongsTo(models.Admins, {
         foreignKey: "adminID",
       });
+      Elections.hasMany(models.questions, {
+        foreignKey: "electionID",
+      });
     }
+
     static async add(adminID, name) {
-      const res = await Election.create({
+      const res = await Elections.create({
         adminID: adminID,
         name: name,
         started: false,
@@ -25,13 +29,13 @@ module.exports = (sequelize, DataTypes) => {
       return res;
     }
   }
-  Election.init({
+  Elections.init({
     name: DataTypes.STRING,
     started: DataTypes.BOOLEAN,
     ended: DataTypes.BOOLEAN
   }, {
     sequelize,
-    modelName: 'Election',
+    modelName: 'Elections',
   });
-  return Election;
+  return Elections;
 };

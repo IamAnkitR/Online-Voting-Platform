@@ -2,7 +2,7 @@
 const express = require("express");
 const app = express();
 const path = require("path");
-const { Admin, Election } = require("./models");
+const { Admins, Elections, questions } = require("./models");
 const bcrypt = require("bcrypt");
 const localStrategy = require("passport-local");
 const passport = require("passport");
@@ -24,11 +24,33 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
 
+app.get("/", (req, res) => {
+  res.render("index");
+});
+
+app.get("/signup", (req, res) => {
+  res.render("signup");
+});
+
+app.get("/signin", (req, res) => {
+  res.render("signin");
+});
+
+app.get("/signout", (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    } else {
+      res.redirect("/");
+    }
+  });
+});
+
 app.use(
   session({
     secret: "this is a secret",
     cookie: {
-      maxAge: 24 * 60 * 60 * 1000,
+      maxAge: 24 * 60 * 60 * 1000, // A whole day
     }
   })
 );
@@ -48,7 +70,7 @@ passport.use(
       passwordField: "password",
     },
     (username, password, done) => {
-      Admin.findOne({ where: { email: username } })
+      Admins.findOne({ where: { email: username } })
         .then(async (user) => {
           const result = await bcrypt.compare(password, user.password);
           if (result) {
@@ -73,7 +95,7 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((id, done) => {
-  Admin.findByPk(id)
+  Admins.findByPk(id)
     .then((user) => {
       done(null, user);
     })
@@ -82,18 +104,10 @@ passport.deserializeUser((id, done) => {
     });
 });
 
-app.get("/", (req, res) => {
-  res.render("index");
-});
 
 
-app.get("/signup", (req, res) => {
-  res.render("signup");
-});
 
-app.get("/signin", (req, res) => {
-  res.render("signin");
-});
+
 
 app.get(
   "/index",
@@ -101,8 +115,8 @@ app.get(
   async (req, res) => {
     const loggedInAdminID = req.user.id;
 
-    const admin = await Admin.findByPk(loggedInAdminID);
-    const elections = await Election.findAll({
+    const admin = await Admins.findByPk(loggedInAdminID);
+    const elections = await Elections.findAll({
       where: { adminID: req.user.id },
     }
     );
@@ -113,12 +127,45 @@ app.get(
   }
 );
 
+app.get(
+  "/elections",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    const loggedInAdminID = req.user.id;
+    const elections = await Elections.findAll({
+      where: { adminID: loggedInAdminID },
+    });
+
+    return res.json({ elections });
+  }
+);
+
+app.get(
+  "/elections/:id",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    const loggedInAdminID = req.user.id;
+    const admin = await Admins.findByPk(loggedInAdminID);
+    const elections = await Elections.findByPk(req.params.id);
+
+    const questions = await questions.findAll({
+      where: { electionID: req.params.id },
+    });
+
+    res.render("ballot", {
+      election: elections,
+      username: admin.name,
+      questions: questions,
+    });
+  }
+);
+
 app.delete(
-  "/election/:id",
+  "/elections/:id",
   connectEnsureLogin.ensureLoggedIn(),
   async (req, res) => {
     try {
-      await Election.destroy({ where: { id: req.params.id } });
+      await Elections.destroy({ where: { id: req.params.id } });
       return res.json({ ok: true });
     } catch (error) {
       console.log(error);
@@ -127,21 +174,8 @@ app.delete(
   }
 );
 
-app.get(
-  "/election",
-  connectEnsureLogin.ensureLoggedIn(),
-  async (req, res) => {
-    const loggedInAdminID = req.user.id;
-    const elections = await Election.findAll({
-      where: { adminID: loggedInAdminID },
-    });
-
-    return res.json({ elections });
-  }
-);
-
 app.post(
-  "/election",
+  "/elections",
   connectEnsureLogin.ensureLoggedIn(),
   async (req, res) => {
     if (!req.body.name) {
@@ -150,7 +184,7 @@ app.post(
 
     const loggedInAdminID = req.user.id;
     try {
-      await Election.add(loggedInAdminID, req.body.name);
+      await Elections.add(loggedInAdminID, req.body.name);
       res.redirect("/index");
     } catch (error) {
       console.log(error);
@@ -160,19 +194,52 @@ app.post(
 );
 
 app.get(
-  "/election/create",
+  "/elections/create",
   connectEnsureLogin.ensureLoggedIn(),
-  async (request, response) => {
-    const loggedInAdminID = request.user.id;
-    const admin = await Admin.findByPk(loggedInAdminID);
-    response.render("createElection", { username: admin.name });
+  async (req, res) => {
+    const loggedInAdminID = req.user.id;
+    const admin = await Admins.findByPk(loggedInAdminID);
+    res.render("createElection", { username: admin.name });
+  }
+);
+
+app.get(
+  "/elections/:id/edit",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    const loggedInAdminID = req.user.id;
+    const election = await Elections.findByPk(req.params.id);
+    const admin = await Admins.findByPk(loggedInAdminID);
+
+    res.render("editElection", {
+      election: election,
+      username: admin.name,
+    });
+  }
+);
+
+app.put(
+  "/elections/:id",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    console.log("found");
+    try {
+      await Elections.update(
+        { name: req.body.name },
+        { where: { id: req.params.id } }
+      );
+      res.redirect("/index");
+    } catch (error) {
+      console.log(error);
+      return res.send(error);
+    }
   }
 );
 
 app.post("/users", async (req, res) => {
   const hashpwd = await bcrypt.hash(req.body.password, saltRounds);
   try {
-    const user = await Admin.create({
+    const user = await Admins.create({
       name: req.body.name,
       email: req.body.email,
       password: hashpwd,
@@ -192,15 +259,56 @@ app.post("/users", async (req, res) => {
   }
 });
 
-app.get("/signout", (req, res) => {
-  req.logout((err) => {
-    if (err) {
-      return next(err);
-    } else {
-      res.redirect("/");
+app.post(
+  "/elections/:id/questions/add",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    const loggedInAdminID = req.user.id;
+
+    const election = await Elections.findByPk(req.params.id);
+
+    if (election.adminID !== loggedInAdminID) {
+      console.log("You don't have access to edit this election");
+      return res.json({ error: "Request denied" });
     }
-  });
-});
+
+    try {
+      await questions.add(
+        req.body.title,
+        req.body.description,
+        req.params.id
+      );
+      res.redirect(`/elections/${req.params.id}`);
+    } catch (error) {
+      console.log(error);
+      return response.send(error);
+    }
+  }
+);
+
+app.delete(
+  "/elections/:id/questions/:questiondID",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    const adminID = req.user.id;
+    const election = await Elections.findByPk(req.params.id);
+
+    if (election.adminID !== adminID) {
+      console.log("You don't have access to edit this election");
+      return res.json({ error: "Request denied" });
+    }
+
+    try {
+      await questions.destroy({ where: { id: req.params.questiondID } });
+      return res.json({ ok: true });
+    } catch (error) {
+      console.log(error);
+      return response.send(error);
+    }
+  }
+);
+
+
 
 app.post(
   "/session",

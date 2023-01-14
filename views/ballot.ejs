@@ -1,0 +1,188 @@
+<html>
+
+<head>
+  <title>VoteMeter</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+    integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script>
+    function launchElection(id) {
+      fetch(`/election/${id}/launch`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((res) => {
+        if (res.ok) {
+          window.location.reload();
+        }
+      });
+    }
+    function endElection(id) {
+      fetch(`/election/${id}/end`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((res) => {
+        if (res.ok) {
+          window.location.reload();
+        }
+      });
+    }
+    function deleteUser(electionID, id) {
+      fetch(`/election/${electionID}/vote/${id}/delete`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then(res => {
+        if (res.ok) {
+          window.location.reload();
+        }
+      })
+    }
+  </script>
+</head>
+
+<body class="bg-slate-800 text-zinc-50">
+
+  <div class="text-center"><%- include('header') %></div>
+  <div class="text-center text-xl font-semibold">
+    Welcome,
+    <%= username %>
+  </div>
+  <br>
+  <div class="text-center">
+    <button class="p-2 mx-5 bg-inherit hover:bg-teal-800 border-2 rounded-lg border-black"><a
+        href="/home">Home</a></button>
+    <button class="p-2 mx-5 bg-inherit hover:bg-teal-800 border-2 rounded-lg border-black"> <a
+        href="/signout">Signout</a></button>
+  </div>
+  <div class="flex flex-col justify-center items-center p-4">
+    <div class="flex flex-col justify-center md:w-2/5 w-full">
+
+      <div class="flex flex-col md:flex-row justify-between gap-4">
+        <div>
+          <div class="flex gap-2">
+            <p class="text-4xl font-semibold">
+              <%= election.name %>
+            </p>
+            <% if (!election.launched) { %>
+              <a class="flex items-center hover:text-blue-600" href="/election/<%= election.id %>/edit"><i
+                  class="fa fa-edit"></i></a>
+              <% } %>
+          </div>
+          <p class="text-xl text-gray-500">
+            <%= questions.length %> Questions
+          </p>
+          <p class="text-xl text-gray-500">
+            <%= users.length %> Users
+          </p>
+        </div>
+        <div class="flex gap-4 items-center">
+          <% if (!election.ended) { %>
+            <% if (!election.launched) { %>
+              <div class="flex flex-col md:flex-row gap-4">
+                <a class="rounded-lg bg-inherit border-2 border-black hover:bg-teal-800 text-white font-semibold p-3"
+                  href="/election/<%= election.id %>/preview">Preview</a>
+                <button onclick="launchElection(<%= election.id %>)"
+                  class="p-3 rounded-lg bg-inherit border-2 border-black hover:bg-teal-800 text-white font-semibold px-6">
+                  Launch
+                </button>
+              </div>
+              <% }
+               else { %>
+                <div class="flex flex-col md:flex-row gap-4">
+                  <a target="_blank" href="/election/<%= election.id %>/vote"
+                    class="p-1 rounded-lg bg-inherit border-2 border-black hover:bg-teal-800 text-white font-bold px-6">
+                    <i class="fa fa-external-link"></i> Public Link
+                  </a>
+                  <a href="/election/<%= election.id %>/result"
+                    class="p-1 rounded-lg bg-inherit border-2 border-black hover:bg-teal-800 text-white font-bold px-6">
+                   Result
+                  </a>
+                  <button onclick="endElection(<%= election.id %>)"
+                    class="p-1 rounded-lg bg-red-600 border-2 border-red-800 hover:bg-red-700 text-white font-bold px-6">
+                    End
+                  </button>
+                </div>
+                <% } %>
+                  <% } else { %>
+                    <a class="p-1 rounded-lg bg-green-600 border-2 border-green-800 hover:bg-green-700 text-white font-bold px-6"
+                      href="/election/<%= election.id %>/result"><i class="fa fa-list-alt"></i> Result</a>
+                    <% } %>
+        </div>
+      </div>
+
+
+      <% if (!election.launched) { %>
+        <p class="text-black text-xl pt-6">Add Question</p>
+        <div>
+          <form action="/election/<%= election.id %>/questions/add" method="post"
+            class="flex flex-col md:flex-row gap-4 pt-2">
+            <div class="flex flex-col">
+              <input type="text" name="title" placeholder="Title" class="border-2 border-black p-2 rounded-lg bg-inherit" />
+            </div>
+            <div class="flex flex-col">
+              <input type="text" name="description" placeholder="Description"
+                class="border-2 border-black p-2 rounded-lg bg-inherit" />
+            </div>
+            <div class="flex justify-center items-center">
+              <button type="submit" class="bg-inherit border-2 border-black p-2 rounded-lg hover:bg-teal-800 px-6">
+                Add
+              </button>
+            </div>
+          </form>
+        </div>
+        <% } %>
+
+
+          <p class="font-semibold pt-4 text-xl">Questions</p>
+          <%- include ('questionList.ejs', {questions: questions, election: election}) %>
+
+
+            <p class="text-xl">Add User</p>
+            <form action="/election/<%= election.id %>/users/add" method="post"
+              class="flex flex-col md:flex-row gap-4 pt-2">
+              <div class="flex flex-col">
+                <input type="text" name="userID" placeholder="User ID" class="border-2 border-black p-2 rounded-lg bg-inherit" />
+              </div>
+              <div class="flex flex-col">
+                <input type="password" name="password" placeholder="Password"
+                  class="border-2 border-black p-2 rounded-lg bg-inherit" />
+              </div>
+              <div class="flex justify-center items-center">
+                <button type="submit"
+                  class="bg-inherit transition duration-200 border-2 border-black p-2 rounded-lg hover:bg-teal-800 px-6">
+                  Add
+                </button>
+              </div>
+            </form>
+
+
+            <p class="font-semibold pt-4 text-xl">Users</p>
+            <% if (users.length===0) { %>
+              <h1 class="text-2xl flex justify-center text-gray-600 font-semibold">No voters yet</h1>
+              <% } %>
+                <div class="flex flex-col justify-center items-center p-4">
+                  <div class="flex flex-col gap-4 justify-center w-full p-4">
+                    <% for (var i=0; i<users.length; i++) { %>
+                      <div class="flex justify-between gap-6">
+                        <li class="text-xl">
+                          <%= users[i].userID %>
+                        </li>
+                        <div class="flex gap-4 justify-center items-center">
+                          <div onclick="deleteUser('<%= election.id %>, <%= users[i].id %>')"><i
+                              class="cursor-pointer fa fa-remove hover:text-red-500 transition duration-200"></i></div>
+                        </div>
+                      </div>
+                      <% } %>
+                  </div>
+                </div>
+    </div>
+  </div>
+</body>
+
+</html>
