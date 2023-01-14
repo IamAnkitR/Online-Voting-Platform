@@ -144,7 +144,7 @@ app.post(
   "/election",
   connectEnsureLogin.ensureLoggedIn(),
   async (req, res) => {
-    if (req.body.name===false) {
+    if (!req.body.name) {
       return res.flash("Election name can't be empty");
     }
 
@@ -192,7 +192,6 @@ app.post("/users", async (req, res) => {
   }
 });
 
-// signout admin
 app.get("/signout", (req, res) => {
   req.logout((err) => {
     if (err) {
