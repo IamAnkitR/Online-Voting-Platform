@@ -9,7 +9,7 @@
   <script>
     //delete election
     function deleteElection(id) {
-      fetch(`/elections/${id}`, {
+      fetch(`/election/${id}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
       }).then((res) => {
@@ -35,10 +35,9 @@
                 <%= elections[i].name %>
               </div>
             </div>
-
             <div class="flex gap-4 justify-center items-center">
               <button class="bg-inherit hover:bg-teal-800 border-2  rounded-lg text-white p-1 mr-4 "> <a
-                  href="/elections/<%= elections[i].id %>">Ballot</a></button>
+                  href="/election/<%= elections[i].id %>">Ballot</a></button>
               <button class="bg-inherit hover:bg-red-800 border-2  rounded-lg text-white p-1 mr-4 ">
                 <div onclick="deleteElection('<%= elections[i].id %>')">Delete
               </button>

@@ -1,48 +1,11 @@
 <html>
 
 <head>
-    <script>
-        function deleteQuestion(id) {
-            fetch(`/elections/<%= elections.id %>/questions/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            }).then(res => {
-                if (res.ok === true) {
-                    window.location.reload()
-                }
-            })
-        }
-    </script>
+   <title>Questions</title>
 </head>
 
 <body>
-    <div class="flex flex-col justify-center items-center p-4">
-        <div class="flex flex-col gap-4 justify-center w-full p-4">
-            <h1 class="text-2xl flex justify-center text-gray-600 font-semibold">Number of questions = <%=
-                    questions.length %>
-            </h1>
-            <% for (var i=0; i<questions.length; i++) { %>
-                <div class="flex justify-between gap-6">
-                    <li class="text-xl">
-                        <%= questions[i].title %>
-                    </li>
-                    <div class="flex gap-4 justify-center items-center">
-                        <a href="/elections/<%= elections.id %>/questions/<%= questions[i].id %>"><i
-                                class="cursor-pointer fa fa-eye hover:text-blue-700 transition duration-200"></i></a>
-                        <% if (!elections.started) { %>
-                            <a href="/elections/<%= elections.id %>/questions/<%= questions[i].id %>/edit"><i
-                                    class="cursor-pointer fa fa-edit hover:text-blue-700 transition duration-200"></i></a>
-                            <div onclick="deleteQuestion('<%= questions[i].id %>')"><i
-                                    class="cursor-pointer fa fa-trash hover:text-red-500 transition duration-200"></i>
-                            </div>
-                            <% } %>
-                    </div>
-                </div>
-                <% } %>
-        </div>
-    </div>
+   <h1>Questions</h1>
 </body>
 
 </html>
