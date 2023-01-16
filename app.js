@@ -239,7 +239,7 @@ app.delete(
 );
 
 app.delete(
-  "/election/:id/question/:questionID",
+  "/election/:id/questions/:questionID",
   connectEnsureLogin.ensureLoggedIn(),
   async (req, res) => {
     const adminID = req.user.id;
@@ -251,7 +251,7 @@ app.delete(
     }
 
     try {
-      await Question.destroy({ where: { id: req.params.questiondID } });
+      await Question.destroy({ where: { id: req.params.questionID } });
       return res.json({ ok: true });
     } catch (error) {
       console.log(error);

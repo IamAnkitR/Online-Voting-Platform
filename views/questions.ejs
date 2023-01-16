@@ -3,7 +3,7 @@
 <head>
     <script>
         function deleteQuestion(id) {
-            fetch(`/election/<%= election.id %>/question/${id}`, {
+            fetch(`/election/<%= election.id %>/questions/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
