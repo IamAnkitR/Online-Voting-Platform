@@ -2,7 +2,7 @@
 const express = require("express");
 const app = express();
 const path = require("path");
-const { Admins, Elections, Question } = require("./models");
+const { Admins, Elections, Question, Options, } = require("./models");
 const bcrypt = require("bcrypt");
 const localStrategy = require("passport-local");
 const passport = require("passport");
@@ -164,6 +164,34 @@ app.get(
   }
 );
 
+app.get(
+  "/election/:id/question/:questiondID",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    const adminID = req.user.id;
+    const admin = await Admins.findByPk(adminID);
+    const election = await Elections.findByPk(req.params.id);
+
+    if (election.adminID !== adminID) {
+      console.log("Unable to access");
+      return res.json({ error: "errir" });
+    }
+
+    const questions = await Question.findByPk(req.params.questiondID);
+
+    const options = await Options.findAll({
+      where: { questionID: req.params.questiondID },
+    });
+
+    res.render("quePage", {
+      username: admin.name,
+      questions: questions,
+      election: election,
+      options: options,
+    });
+  }
+);
+
 
 
 app.put(
@@ -175,7 +203,7 @@ app.put(
         { name: req.body.name },
         { where: { id: req.params.id } }
       );
-      response.redirect("/index");
+      res.redirect("/index");
     } catch (error) {
       console.log(error);
       return res.send(error);
@@ -187,6 +215,19 @@ app.delete(
   "/election/:id",
   connectEnsureLogin.ensureLoggedIn(),
   async (req, res) => {
+    const questions = await Question.findAll({
+      where: { electionID: req.params.id },
+    });
+    questions.forEach(async (question) => {
+      const options = await Options.findAll({
+        where: { questionID: question.id },
+      });
+      options.forEach(async (option) => {
+        await Options.destroy({ where: { id: option.id } });
+      });
+      await Question.destroy({ where: { id: question.id } });
+    });
+
     try {
       await Elections.destroy({ where: { id: req.params.id } });
       return res.json({ ok: true });
@@ -197,11 +238,63 @@ app.delete(
   }
 );
 
+app.delete(
+  "/election/:id/question/:questionID",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    const adminID = req.user.id;
+    const election = await Elections.findByPk(req.params.id);
+
+    if (election.adminID !== adminID) {
+      console.log("Unable to access");
+      return res.json({ error: "error" });
+    }
+
+    try {
+      await Question.destroy({ where: { id: req.params.questiondID } });
+      return res.json({ ok: true });
+    } catch (error) {
+      console.log(error);
+      return res.send(error);
+    }
+  }
+);
+
+app.delete(
+  "/election/:electionID/questions/:questionID/options/:id",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+
+    const adminID = req.user.id;
+    const election = await Elections.findByPk(req.params.electionID);
+
+    if (election.adminID !== adminID) {
+      console.log("Unable to access");
+      return res.json({ error: "error" });
+    }
+
+    const question = await Question.findByPk(req.params.questionID);
+
+    if (!question) {
+      console.log("Question not found");
+      return res.json({ error: "error" });
+    }
+
+    try {
+      await Options.destroy({ where: { id: req.params.id } });
+      return res.json({ ok: true });
+    } catch (error) {
+      console.log(error);
+      return res.send(error);
+    }
+  }
+);
+
 app.post(
   "/election",
   connectEnsureLogin.ensureLoggedIn(),
   async (req, res) => {
-    if (req.body.name===false) {
+    if (req.body.name === false) {
       return res.flash("Enter election name!");
     }
 
@@ -259,6 +352,31 @@ app.post(
         req.params.id
       );
       res.redirect(`/election/${req.params.id}`);
+    } catch (error) {
+      console.log(error);
+      return res.send(error);
+    }
+  }
+);
+
+app.post(
+  "/election/:electionID/questions/:questionID/options/add",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    const adminID = req.user.id;
+
+    const election = await Elections.findByPk(req.params.electionID);
+
+    if (election.adminID !== adminID) {
+      console.log("Unable to access");
+      return res.json({ error: "error" });
+    }
+
+    try {
+      await Options.add(req.body.option, req.params.questionID);
+      res.redirect(
+        `/election/${req.params.electionID}/question/${req.params.questionID}`
+      );
     } catch (error) {
       console.log(error);
       return res.send(error);
