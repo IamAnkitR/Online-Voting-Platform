@@ -1,0 +1,41 @@
+<html>
+
+<head>
+    <title>Online-Voting-Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+        integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body class="bg-slate-800 text-zinc-50">
+    <div class="flex justify-center text-blue-800">
+        <%- include ('header') %>
+    </div>
+    <br>
+    <div class="flex justify-center">
+        <button class="bg-inherit hover:bg-teal-800 border-2  rounded-lg text-white p-2 mr-4 "><a href="/index">Home</a>
+        </button>
+    </div>
+    <div class="flex flex-col justify-center items-center p-4">
+        <div class="flex flex-col justify-center md:w-2/5 w-full">
+
+            <div class="flex flex-col justify-center pb-8">
+                <span class="text-3xl text-center font-semibold pt-4">Election Name --><span
+                        class="text-3xl text-center font-semibold text-red-400 pt-4">
+                        <%= election.name %>
+                    </span></span>
+                <span class="text-3xl text-center font-semibold pt-4">Number of questions --> <span>
+                        <%= questions.length %>
+                    </span>
+                </span>
+                <span class="text-3xl text-center font-semibold pt-4">Number of options --> <span>
+                        <%= options.length %>
+                    </span>
+                </span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

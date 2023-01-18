@@ -28,6 +28,29 @@ module.exports = (sequelize, DataTypes) => {
       });
       return res;
     }
+    static async start(id) {
+      const res = await Elections.update(
+        { started: true },
+        {
+          where: {
+            id: id,
+          },
+        }
+      );
+      return res;
+    }
+
+    static async end(id) {
+      const res = await Elections.update(
+        { ended: true },
+        {
+          where: {
+            id: id,
+          },
+        }
+      );
+      return res;
+    }
   }
   Elections.init({
     name: DataTypes.STRING,

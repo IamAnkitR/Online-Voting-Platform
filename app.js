@@ -105,6 +105,10 @@ app.get("/signout", (req, res) => {
   });
 });
 
+app.get("/ballot", (req,res) => {
+  res.render("ballot");
+})
+
 app.get(
   "/index",
   connectEnsureLogin.ensureLoggedIn(),
@@ -192,9 +196,42 @@ app.get(
   }
 );
 
+app.get(
+  "/election/:id/preview",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (request, response) => {
+    const adminID = request.user.id;
+    const election = await Elections.findByPk(request.params.id);
+
+    if (election.adminID !== adminID) {
+      console.log("You don't have access to edit this election");
+      return response.json({ error: "Request denied" });
+    }
+
+    const questions = await Question.findAll({
+      where: { electionID: request.params.id },
+    });
+
+    const options = [];
+
+    for (let i = 0; i < questions.length; i++) {
+      const allOption = await Options.findAll({
+        where: { questionID: questions[i].id },
+      });
+      options.push(allOption);
+    }
+
+    response.render("preview", {
+      election: election,
+      questions: questions,
+      options: options,
+    });
+  }
+);
 
 
-app.put(
+
+app.post(
   "/election/:id",
   connectEnsureLogin.ensureLoggedIn(),
   async (req, res) => {
@@ -211,23 +248,74 @@ app.put(
   }
 );
 
+app.put(
+  "/election/:id/start",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    console.log("Election started");
+    const adminID = req.user.id;
+    const election = await Elections.findByPk(req.params.id);
+    if (election.adminID !== adminID) {
+      console.log("Unable to access");
+      return res.json({ error: "error" });
+    }
+    const questions = await Question.findAll({
+      where: { electionID: req.params.id },
+    });
+    if (questions.length === 0) {
+      return res.json({ error: "error" });
+    }
+    for (let i = 0; i < questions.length; i++) {
+      const options = await Options.findAll({
+        where: { questionID: questions[i].id },
+      });
+      if (options.length < 1) {
+        return res.json({ error: "error" });
+      }
+    }
+
+    try {
+      console.log("test passed");
+      await Elections.start(req.params.id);
+      return res.json({ ok: true });
+    } catch (error) {
+      console.log(error);
+      return res.send(error);
+    }
+  }
+);
+
+app.put(
+  "/election/:id/end",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    const adminID = req.user.id;
+    const election = await Elections.findByPk(req.params.id);
+    if (election.adminID !== adminID) {
+      console.log("Unable to access");
+      return res.json({ error: "error" });
+    }
+
+    if (election.ended === true || election.started === false) {
+      console.log("Not started yet");
+      return res.json({ error: "error" });
+    }
+
+    try {
+      await Elections.end(req.params.id);
+      return res.json({ ok: true });
+    } catch (error) {
+      console.log(error);
+      return res.send(error);
+    }
+  }
+);
+
+
 app.delete(
   "/election/:id",
   connectEnsureLogin.ensureLoggedIn(),
   async (req, res) => {
-    const questions = await Question.findAll({
-      where: { electionID: req.params.id },
-    });
-    questions.forEach(async (question) => {
-      const options = await Options.findAll({
-        where: { questionID: question.id },
-      });
-      options.forEach(async (option) => {
-        await Options.destroy({ where: { id: option.id } });
-      });
-      await Question.destroy({ where: { id: question.id } });
-    });
-
     try {
       await Elections.destroy({ where: { id: req.params.id } });
       return res.json({ ok: true });
@@ -251,6 +339,9 @@ app.delete(
     }
 
     try {
+      await Options.destroy({
+        where: { questionID: req.params.questionID },
+      })
       await Question.destroy({ where: { id: req.params.questionID } });
       return res.json({ ok: true });
     } catch (error) {

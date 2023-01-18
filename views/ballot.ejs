@@ -6,6 +6,33 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
     integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script>
+     
+      function start(id) {
+        fetch(`/election/${id}/start`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }).then((res) => {
+          if (res.ok) {
+            window.location.reload();
+          }
+        });
+      }
+      function end(id) {
+        fetch(`/election/${id}/end`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }).then((res) => {
+          if (res.ok) {
+            window.location.reload();
+          }
+        });
+      }
+    </script>
 </head>
 
 <body class="bg-slate-800 text-zinc-50 text-center">
@@ -17,13 +44,12 @@
   </span>
   <span class="bg-inherit hover:bg-teal-800 border-2  rounded-lg text-white p-2 "><a href="/">Sign-out</a>
   </span>
-  <br>
   <div class="flex flex-col justify-center items-center p-4">
     <div class="flex flex-col justify-center md:w-2/5 w-full">
 
-      <div class="text-center flex flex-col md:flex-row justify-between gap-4">
+      <div class="flex flex-col md:flex-row justify-center gap-4">
         <div>
-          <p class="text-4xl font-semibold">
+          <p class="text-4xl text-center font-semibold">
             <%= election.name %>
           </p>
           <p class="text-xl">
@@ -31,6 +57,56 @@
           </p>
         </div>
       </div>
+      <br>
+      <div class="flex flex-row justify-center">
+        <% if (!election.ended) { %> <% if (!election.launched) { %>
+         
+            <div class="flex gap-10">
+              <a
+                class="p-1 rounded-lg bg-inherit border-2 border-black hover:bg-teal-800 text-white font-bold px-6"
+                href="/election/<%= election.id %>/preview"
+                >Preview</a
+              >
+              <button
+                onclick="start(<%= election.id %>)"
+                class="p-1 rounded-lg bg-inherit border-2 border-black hover:bg-teal-800 text-white font-bold px-6"
+              >
+                Launch
+              </button>
+            </div>
+        <% } else { %>
+        <div class="flex flex-col md:flex-row gap-4">
+          <a
+            target="_blank"
+            href="/election/<%= election.id %>/vote"
+            class="p-1 rounded-lg bg-purple-600 border-2 border-purple-800 hover:bg-purple-700 text-white font-bold px-6"
+          >
+            <i class="fa fa-external-link"></i> Public Link
+          </a>
+          <a
+            href="/election/<%= election.id %>/result"
+            class="p-1 rounded-lg bg-green-600 border-2 border-green-800 hover:bg-green-700 text-white font-bold px-6"
+          >
+            <i class="fa fa-list-alt"></i> Result
+          </a>
+          <button
+            onclick="endElection(<%= election.id %>)"
+            class="p-1 rounded-lg bg-red-600 border-2 border-red-800 hover:bg-red-700 text-white font-bold px-6"
+          >
+            <i class="fa fa-flag-checkered"></i> End
+          </button>
+        </div>
+        <% } %> <% } else { %>
+        <!-- Result Button -->
+        <a
+          class="p-1 rounded-lg bg-green-600 border-2 border-green-800 hover:bg-green-700 text-white font-bold px-6"
+          href="/election/<%= election.id %>/results"
+          ><i class="fa fa-list-alt"></i> Result</a
+        >
+        <% } %>
+      </div>
+      
+      <% if (!election.launched) { %>
         <div>
           <form action="/election/<%= election.id %>/questions/add" method="post"
             class="flex flex-col md:flex-row gap-4 pt-4">
@@ -49,6 +125,7 @@
             </div>
           </form>
         </div>
+        <% } %>
 
           <p class="text-center font-semibold pt-4 text-xl">Questions</p>
           <%- include ('questions') %>

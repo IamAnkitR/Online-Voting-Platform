@@ -11,11 +11,13 @@ module.exports = {
      */
     await queryInterface.addColumn("Questions", "electionID", {
       type: Sequelize.DataTypes.INTEGER,
+      onDelete: "CASCADE",
     });
 
     await queryInterface.addConstraint("Questions", {
       fields: ["electionID"],
       type: "foreign key",
+      onDelete: "CASCADE",
       references: { table: "Elections", field: "id" },
     });
   },
