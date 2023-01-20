@@ -55,5 +55,5 @@ describe("Features Test Suits",()=>{
       await agent.get("/signout");
       const res = await agent.get("/index");
       expect(res.statusCode).toBe(302);
-    });
+    }); 
 })

@@ -2,7 +2,7 @@
 const express = require("express");
 const app = express();
 const path = require("path");
-const { Admins, Elections, Question, Options, } = require("./models");
+const { Admins, Elections, Question, Options, Voters } = require("./models");
 const bcrypt = require("bcrypt");
 const localStrategy = require("passport-local");
 const passport = require("passport");
@@ -149,11 +149,15 @@ app.get(
     const questions = await Question.findAll({
       where: { electionID: req.params.id },
     });
+    const voters = await Voters.findAll({
+      where: {electionID: req.params.id},
+    });
 
     res.render("ballot", {
       election: elections,
       username: admin.name,
       questions: questions,
+      voters: voters,
     });
   }
 );
@@ -199,17 +203,17 @@ app.get(
 app.get(
   "/election/:id/preview",
   connectEnsureLogin.ensureLoggedIn(),
-  async (request, response) => {
-    const adminID = request.user.id;
-    const election = await Elections.findByPk(request.params.id);
+  async (req, res) => {
+    const adminID = req.user.id;
+    const election = await Elections.findByPk(req.params.id);
 
     if (election.adminID !== adminID) {
-      console.log("You don't have access to edit this election");
-      return response.json({ error: "Request denied" });
+      console.log("Unable to access");
+      return res.json({ error: "error" });
     }
 
     const questions = await Question.findAll({
-      where: { electionID: request.params.id },
+      where: { electionID: req.params.id },
     });
 
     const options = [];
@@ -221,13 +225,35 @@ app.get(
       options.push(allOption);
     }
 
-    response.render("preview", {
+    res.render("preview", {
       election: election,
       questions: questions,
       options: options,
     });
   }
 );
+
+app.get("/election/:id/vote", async (req, res) => {
+  const election = await Elections.findByPk(req.params.id);
+  const questions = await Question.findAll({
+    where: {
+      electionID: req.params.id,
+    },
+  });
+  const options = [];
+
+  for (let i = 0; i < questions.length; i++) {
+    const allOption = await Options.findAll({
+      where: { questionID: questions[i].id },
+    });
+    options.push(allOption);
+  }
+  res.render("votePage", {
+    election: election,
+    questions: questions,
+    options: options,
+  });
+});
 
 
 
@@ -248,6 +274,51 @@ app.post(
   }
 );
 
+app.post(
+  "/election/:id/voters/add",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    const adminID = req.user.id;
+    const election = await Elections.findByPk(req.params.id);
+
+    if (election.adminID !== adminID) {
+      console.log("Unable to access");
+      return res.json({ error: "error" });
+    }
+
+    try {
+      await Voters.add(
+        req.body.voterID,
+        req.body.password,
+        req.params.id
+      );
+      res.redirect(`/election/${req.params.id}`);
+    } catch (error) {
+      return res.send(error);
+    }
+  }
+);
+
+app.post(
+  "/election/:electionID/voter/:voterID/delete",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    const adminID = req.user.id;
+    const election = await Elections.findByPk(req.params.electionID);
+
+    if (election.adminID !== adminID) {
+      console.log("Unable to access");
+      return res.json({ error: "error" });
+    }
+
+    try {
+      await Voters.delete(req.params.voterID);
+      return res.json({ ok: true });
+    } catch (error) {
+      return res.send(error);
+    }
+  }
+);
 app.put(
   "/election/:id/start",
   connectEnsureLogin.ensureLoggedIn(),

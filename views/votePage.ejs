@@ -1,0 +1,61 @@
+<html>
+  <head>
+    <title>Online-Voting-Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+      integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body class="bg-slate-800 text-zinc-50">
+    <div class="flex justify-center text-blue-800">
+      <%- include ('header') %>
+    </div>
+    <div class="flex flex-col justify-center items-center p-4">
+      <div class="flex flex-col justify-center md:w-2/5 w-full">
+        <br>
+        <div class="flex justify-center pb-4">
+          <p class="text-4xl font-semibold pt-4"><%= election.name %></p>
+        </div>
+        <div class="text-center"><h2>Vote Here</div>
+
+        <% if (election.ended) { %>
+            <div class="flex justify-center">
+                <p class="text-2xl text-gray-600">This election has ended.</p>
+            </div>
+        <% } else if (!election.started) { %>
+            <div class="flex justify-center">
+                <p class="text-2xl text-gray-600">This election has not been launched yet.</p>
+            </div>
+        <% } else { %>
+            <div class="flex flex-col gap-4">
+                    <form action="/election/<%= election.id %>/vote" method="post" class="flex flex-col gap-4 justify-center items-center">
+                        <div class="flex flex-col gap-2">
+                            <label for="voterID">Voter ID</label>
+                            <input
+                            class="border-2 flex bg-inherit items-center border-black p-2 rounded-lg"
+                            id="userID"
+                            type="name"
+                            name="userID"
+                            />
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label for="password">Password</label>
+                            <input
+                            class="border-2 bg-inherit flex items-center border-black p-2 rounded-lg"
+                            id="password"
+                            type="password"
+                            name="password"
+                            />
+                        </div>
+                        <button class="flex justify-center mt-4 p-2 rounded-lg bg-inherit hover:bg-teal-800 border-2 border-black">Submit</button>
+                    </form>
+            </div>
+        <% } %>
+      </div>
+    </div>
+  </body>
+</html>
