@@ -233,6 +233,8 @@ app.get(
   }
 );
 
+const voter = require("./models/voters");
+
 app.get("/election/:id/vote", async (req, res) => {
   const election = await Elections.findByPk(req.params.id);
   const questions = await Question.findAll({
@@ -248,11 +250,24 @@ app.get("/election/:id/vote", async (req, res) => {
     });
     options.push(allOption);
   }
+
+  if(voter.status){
   res.render("votePage", {
     election: election,
     questions: questions,
     options: options,
+    exist: true,
+    submit: true,
   });
+} else{
+  res.render("votePage", {
+    election: election,
+    questions: questions,
+    options: options,
+    exist: false,
+    submit: false,
+  });
+}
 });
 
 
@@ -319,6 +334,111 @@ app.post(
     }
   }
 );
+
+
+
+app.post("/election/:id/vote",
+ async (req, res) => {
+  const election = await Elections.findByPk(req.params.id);
+
+  try {
+    const voter = await Voters.findOne({
+      where: {
+        electionID: req.params.id,
+        voterID: req.body.voterID,
+        password: req.body.password,
+      },
+    });
+     
+    if(voter){
+    const questions = await Question.findAll({
+      where: {
+        electionID: req.params.id,
+      },
+    });
+    const options = [];
+
+    for (let i = 0; i < questions.length; i++) {
+      const allOption = await Options.findAll({
+        where: { questionID: questions[i].id },
+      });
+      options.push(allOption);
+    }
+  
+    if(voter.status){
+    res.render("votePage", {
+      election: election,
+      questions: questions,
+      options: options,
+      voter: voter,
+      exist:true,
+      submit:true,
+    });
+  }  else {
+    res.render("votePage", {
+      election: election,
+      questions: questions,
+      options: options,
+      voter: voter,
+      exist: true,
+      submit: false,
+    });
+  }
+  } else{
+    res.render("votePage", {
+      election: election,
+      questions: [],
+      options: [],
+      voter: null,
+      exist: false,
+      submit: false,
+    });
+  }
+  } catch (error) {
+    console.log(error);
+    return res.send(error);
+  }
+});
+
+
+app.post(
+  "/election/:electionID/voter/:id/submit",
+  async (req, res) => {
+    const election = await Elections.findByPk(req.params.electionID);
+
+    try {
+      const voter = await Voters.findByPk(req.params.id);
+      
+      const questions = await Question.findAll({
+        where: {
+          electionID: req.params.electionID,
+        },
+      });
+      for (let i = 0; i < questions.length; i++) {
+        console.log(questions[i].id);
+        console.log(Number(req.body[`question-${questions[i].id}`]));
+        const option = await Options.findByPk(
+          Number(req.body[`question-${questions[i].id}`])
+        );
+        console.log(option.title);
+      }
+      await Voters.voted(req.params.id);
+
+      res.render("votePage", {
+        election: election,
+        questions: [],
+        options: [],
+        voter: voter,
+        exist: true,
+        submit: true,
+      });
+    } catch (error) {
+      console.log(error);
+      return res.send(error);
+    }
+  }
+);
+
 app.put(
   "/election/:id/start",
   connectEnsureLogin.ensureLoggedIn(),

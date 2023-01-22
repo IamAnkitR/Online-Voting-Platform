@@ -18,28 +18,29 @@
       <div class="flex flex-col justify-center md:w-2/5 w-full">
         <br>
         <div class="flex justify-center pb-4">
-          <p class="text-4xl font-semibold pt-4"><%= election.name %></p>
+          <p class="text-3xl font-semibold pt-4"><%= election.name %></p>
         </div>
-        <div class="text-center"><h2>Vote Here</div>
-
+       
         <% if (election.ended) { %>
             <div class="flex justify-center">
                 <p class="text-2xl text-gray-600">This election has ended.</p>
             </div>
         <% } else if (!election.started) { %>
             <div class="flex justify-center">
-                <p class="text-2xl text-gray-600">This election has not been launched yet.</p>
+                <p class="text-2xl text-gray-600">This election has not started.</p>
             </div>
         <% } else { %>
             <div class="flex flex-col gap-4">
+              <% if(!exist) { %>
+                <div class="text-center text-3xl font-semibold text-red-800"><h2>Login with your voterID</div>
                     <form action="/election/<%= election.id %>/vote" method="post" class="flex flex-col gap-4 justify-center items-center">
                         <div class="flex flex-col gap-2">
                             <label for="voterID">Voter ID</label>
                             <input
                             class="border-2 flex bg-inherit items-center border-black p-2 rounded-lg"
-                            id="userID"
-                            type="name"
-                            name="userID"
+                            id="voterID"
+                            type="number"
+                            name="voterID"
                             />
                         </div>
                         <div class="flex flex-col gap-2">
@@ -53,6 +54,45 @@
                         </div>
                         <button class="flex justify-center mt-4 p-2 rounded-lg bg-inherit hover:bg-teal-800 border-2 border-black">Submit</button>
                     </form>
+                 <% } else { %>
+                  <div class="text-center text-3xl font-semibold text-red-800"><h2>Vote Here</div>
+                  <div>
+                    <p class="text-xl text-center">Voter ID: <b><%= voter.voterID %></b></p>
+                </div>
+                <% if (submit) { %>
+                  <p class="flex justify-center text-3xl text-white-600 pt-8">Congratulations! You have voted successfully!</p>
+              <% } else { %>
+                <form action="/election/<%= election.id %>/voter/<%= voter.id %>/submit" method="post" class="pt-6">
+                  <% for (var i=0; i<questions.length; i++) { %>
+                      <div>
+                        <div class="flex justify-center">
+                          <p class="font-bold text-xl">Que <%= i+1 %>. <%= questions[i].title %> <span class="font-light">[ <%= questions[i].description %>]</span></p>
+                        </div>
+                          <div class="pt-2 pl-6">
+                            <div id="question-<%= questions[i].id %>">
+                              <% for (var j=0; j<options[i].length; j++) { %>
+                                <div class="flex justify-center">
+                                  <div class="flex gap-2">
+                                    <input
+                                        class="border-2 flex items-center border-black p-2 rounded-lg"
+                                        id="question-<%= questions[i].id %>-<%= options[i][j].id %>"
+                                        type="radio"
+                                        value="<%= options[i][j].id %>"
+                                        name="question-<%= questions[i].id %>"
+                                    />
+                                    <label for="question-<%= questions[i].id %>-<%= options[i][j].id %>"><%= options[i][j].title %></label>
+                                </div>
+                                </div>
+                                  
+                              <% } %>
+                                </div>
+                          </div>
+                      </div>
+                  <% } %>
+                  <button class="flex justify-center items-center w-full mt-8 p-2 rounded-lg bg-inherit hover:bg-teal-800 border-2 border-black-800 text-white font-bold">Vote</button>
+              </form>
+              <% } %>
+              <% } %> 
             </div>
         <% } %>
       </div>

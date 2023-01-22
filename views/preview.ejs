@@ -31,8 +31,8 @@
                     <br>
                     <p class="text-center">Options</p>
                     <div class="pt-2">
-                        <% for (var j=0; j<=options.length; j++) { %>
-                                <li class="list-decimal">Option</li>
+                        <% for (var j=0; j<options[i].length; j++) { %>
+                                <li class="list-decimal"><%=options[i][j].title%></li>
                         <% } %>
                     </div>
                 </div>
