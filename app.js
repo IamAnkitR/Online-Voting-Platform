@@ -544,15 +544,25 @@ app.put(
       where: { electionID: req.params.id },
     });
     if (questions.length === 0) {
-      return res.json({ error: "error" });
+      req.flash("error", "No question added");
+      return res.redirect(`/election/${req.params.id}`);
     }
     for (let i = 0; i < questions.length; i++) {
       const options = await Options.findAll({
         where: { questionID: questions[i].id },
       });
       if (options.length < 1) {
-        return res.json({ error: "error" });
+        req.flash("error", "Please add minimum 2 options");
+      return res.redirect(`/election/${req.params.id}`);
       }
+    }
+
+    const voters = await Voters.findAll({
+      where: { electionID: req.params.id },
+    });
+    if (voters.length === 0) {
+      req.flash("error", "No voters Added");
+      return res.redirect(`/election/${req.params.id}`);
     }
 
     try {
