@@ -55,7 +55,9 @@
                         <button class="flex justify-center mt-4 p-2 rounded-lg bg-inherit hover:bg-teal-800 border-2 border-black">Submit</button>
                     </form>
                  <% } else { %>
+                  <% if(!submit) { %>
                   <div class="text-center text-3xl font-semibold text-red-800"><h2>Vote Here</div>
+                    <% } %>
                   <div>
                     <p class="text-xl text-center">Voter ID: <b><%= voter.voterID %></b></p>
                 </div>

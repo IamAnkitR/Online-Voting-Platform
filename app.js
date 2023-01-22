@@ -672,6 +672,27 @@ app.post(
 );
 
 app.post("/users", async (req, res) => {
+
+  if (req.body.email.length === 0) {
+    req.flash("error", "Enter an email");
+    return res.redirect("/signup");
+  }
+
+  if (req.body.password.length === 0) {
+    req.flash("error", "Enter a password");
+    return res.redirect("/signup");
+  }
+
+  if (req.body.name.length === 0) {
+    req.flash("error", "Enter a name");
+    return res.redirect("/signup");
+  }
+
+  const admins = await Admins.findOne({ where: { email: req.body.email } });
+  if (admins) {
+    req.flash( "error","Email already exists");
+    return res.redirect("/signup");
+  }
   const hashpwd = await bcrypt.hash(req.body.password, saltRounds);
   try {
     const user = await Admins.create({
@@ -753,7 +774,6 @@ app.post(
     failureFlash: true,
   }),
   function (req, res) {
-    console.log(req.user);
     res.redirect("/index");
   }
 );

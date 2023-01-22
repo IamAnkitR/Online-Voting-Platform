@@ -15,6 +15,14 @@
           >
         </div>
         <br>
+        <div class="flex flex-col justify-center items-center gap-3 ">
+          <% if (messages && messages.error && messages.error.length > 0) { %>
+            <% for(var i=0; i<messages.error.length; i++) {%>
+              <div class="bg-red-800 text-black font-semibold p-2 rounded-lg shadow"> <%= messages.error[i] %></div>
+            <% } %>
+          <% } %>
+        </div>
+        <br>
         <h1 class="text-2xl flex justify-center font-semibold">Sign-Up to the Online-Voting-Platform</h1>
         <form action="/users" method="post" class="flex flex-col gap-4 pt-6">
           <div class="flex flex-col">
@@ -28,7 +36,7 @@
           <div class="flex flex-col">
             <label for="email">Email</label>
             <input
-              type="text"
+              type="email"
               name="email"
               class="border-2 border-black p-2 rounded-lg bg-inherit"
             />
