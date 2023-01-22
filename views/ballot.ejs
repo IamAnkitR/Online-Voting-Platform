@@ -100,7 +100,7 @@
               <% } %>
                 <% } else { %>
                   <a class="p-1 rounded-lg bg-inherit border-2 border-black hover:bg-teal-800 text-white font-bold px-6"
-                    href="/election/<%= election.id %>/results">Result</a>
+                    href="/election/<%= election.id %>/result">Result</a>
                   <% } %>
       </div>
 
@@ -156,10 +156,12 @@
                     <li class="text-xl">
                       <%= voters[i].voterID %>
                     </li>
+                    <% if (!election.started) { %> 
                     <div class="flex gap-4 justify-center items-center">
                       <button onclick="deleteVoter(<%= election.id %>, <%= voters[i].id %>)">Delete</button>
 
                     </div>
+                    <% } %>
                   </div>
                   <% } %>
               </div>

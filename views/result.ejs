@@ -1,0 +1,60 @@
+<html>
+
+<head>
+  <title>Online-Voting-Platform</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+    integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body class="bg-slate-800 text-zinc-50">
+  <div class="flex justify-center text-blue-800">
+    <%- include ('header') %>
+  </div>
+  <br>
+  <div class="text-center">
+    <a class="bg-inherit hover:bg-teal-800 transition duration-200 border-2 border-black p-2 rounded-lg"
+    href="/election/<%= election.id %>">Go Back</a>
+  </div>
+  
+  <div class="flex flex-col justify-center items-center p-4">
+    <div class="flex flex-col justify-center md:w-2/5 w-full">
+      <div class="pt-6 text-center">
+        <p class="font-bold text-3xl">
+          <%= election.name %>
+        </p>
+      </div>
+
+      <div class="pt-8">
+        <div class="flex flex-col gap-6">
+          <% for (var i=0; i<questions.length; i++) { %>
+            <div>
+              <div class="flex justify-center">
+                <p class="font-bold text-xl">Que <%= i+1 %>. <%= questions[i].title %> <span class="font-light">[<%=
+                          questions[i].description %>]</span></p>
+              </div>
+
+
+              <div class="pt-6 pl-6 flex flex-col gap-4">
+                <% for (var j=0; j<options[i].length; j++) { %>
+                  <div class="flex gap-2 justify-center">
+                   
+                    <p class="flex items-center gap-2 text-xl">
+                      <%=j+1%>.
+                      <%= options[i][j].title %>:<b class="text-red-700">
+                          <%= data[i][j] %>%
+                        </b>
+                    </p>
+                  </div>
+                  <% } %>
+              </div>
+            </div>
+            <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

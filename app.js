@@ -270,6 +270,75 @@ app.get("/election/:id/vote", async (req, res) => {
 }
 });
 
+app.get(
+  "/election/:id/result",
+  connectEnsureLogin.ensureLoggedIn(),
+  async (req, res) => {
+    const adminID = req.user.id;
+    const admin = await Admins.findByPk(adminID);
+    const election = await Elections.findByPk(req.params.id);
+
+    if (adminID !== election.adminID) {
+      return res.send("Unable to access");
+    }
+
+    const questions = await Question.findAll({
+      where: {
+        electionID: req.params.id,
+      },
+    });
+
+    const voters = await Voters.findAll({
+      where: {
+        electionID: req.params.id,
+      },
+    });
+
+    const totalVoters = voters.length;
+
+    let answer = [];
+
+    for (let i = 0; i < questions.length; i++) {
+      let array = [];
+
+      const allOption = await Options.findAll({
+        where: { questionID: questions[i].id },
+      });
+
+      allOption.forEach((option) => {
+        let count = 0;
+
+        voters.forEach((voter) => {
+          if (voter.responses.includes(option.id)) {
+            count++;
+          }
+        });
+
+        array.push((count * 100) / totalVoters); 
+      });
+
+      answer.push(array);
+    }
+
+    const options = [];
+
+    for (let i = 0; i < questions.length; i++) {
+      const allOption = await Options.findAll({
+        where: { questionID: questions[i].id },
+      });
+      options.push(allOption);
+    }
+
+    res.render("result", {
+      username: admin.name,
+      election: election,
+      questions: questions,
+      options: options,
+      data: answer,
+    });
+  }
+);
+
 
 
 app.post(
@@ -298,6 +367,15 @@ app.post(
 
     if (election.adminID !== adminID) {
       console.log("Unable to access");
+      return res.json({ error: "error" });
+    }
+
+    const voter = await Voters.findOne({
+      where: { electionID: req.params.id, voterID: req.body.voterID },
+    });
+
+    if (voter) {
+      console.log("Voter already exists");
       return res.json({ error: "error" });
     }
 
@@ -414,14 +492,16 @@ app.post(
           electionID: req.params.electionID,
         },
       });
+
+      let responses = [];
+
       for (let i = 0; i < questions.length; i++) {
-        console.log(questions[i].id);
-        console.log(Number(req.body[`question-${questions[i].id}`]));
-        const option = await Options.findByPk(
-          Number(req.body[`question-${questions[i].id}`])
-        );
-        console.log(option.title);
+        const responseID = Number(req.body[`question-${questions[i].id}`]);
+
+        responses.push(responseID);
       }
+
+      await Voters.addResponse(req.params.id, responses);
       await Voters.voted(req.params.id);
 
       res.render("votePage", {
