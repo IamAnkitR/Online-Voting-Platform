@@ -32,6 +32,14 @@
   <span class="bg-inherit hover:bg-teal-800 border-2  rounded-lg text-white p-2 "><a href="/">Sign-out</a>
   </span>
   <br>
+  <br>
+  <div class="flex flex-col justify-center items-center gap-3 pt-4">
+    <% if (messages && messages.error && messages.error.length > 0) { %>
+      <% for(var i=0; i<messages.error.length; i++) {%>
+        <div class="bg-red-800 text-black font-semibold p-2 rounded-lg shadow"> <%= messages.error[i] %></div>
+      <% } %>
+    <% } %>
+  </div>
   <div class="flex flex-col justify-center items-center p-4">
     <div class="flex flex-col justify-center md:w-2/5 w-full">
      

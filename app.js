@@ -656,11 +656,21 @@ app.post(
   "/election",
   connectEnsureLogin.ensureLoggedIn(),
   async (req, res) => {
-    if (req.body.name === false) {
-      return res.flash("Enter election name!");
+    if (!req.body.name) {
+      req.flash("error","Enter election name!");
+      return res.redirect("/elections/create");
     }
 
     const loggedInAdminID = req.user.id;
+
+    const oldElec = await Elections.findOne({
+      where: { adminID: loggedInAdminID, name: req.body.name },
+    });
+    if (oldElec) {
+      req.flash("error", "Election name already used");
+      return res.redirect("/elections/create");
+    }
+
     try {
       await Elections.add(loggedInAdminID, req.body.name);
       res.redirect("/index");
@@ -728,6 +738,24 @@ app.post(
       return res.json({ error: "error" });
     }
 
+    if (election.started) {
+      console.log("Election has started");
+      return res.json({ error: "error" });
+    }
+
+    if (req.body.title.length === 0) {
+      req.flash("error", "Enter question title");
+      return res.redirect(`/election/${req.params.id}`);
+    }
+
+    const oldTitle = await Question.findOne({
+      where: { electionID: req.params.id, title: req.body.title },
+    });
+    if (oldTitle) {
+      req.flash("error", "Title already exist");
+      return res.redirect(`/election/${req.params.id}`);
+    }
+
     try {
       await Question.add(
         req.body.title,
@@ -753,6 +781,31 @@ app.post(
     if (election.adminID !== adminID) {
       console.log("Unable to access");
       return res.json({ error: "error" });
+    }
+
+    if (election.started) {
+      console.log("Election has started");
+      return res.json({ error: "error" });
+    }
+
+    if (req.body.option.length === 0) {
+      req.flash("error", "Add an option");
+      return res.redirect(
+        `/election/${req.params.electionID}/question/${req.params.questionID}`
+      );
+    }
+
+    const oldOption = await Options.findOne({
+      where: {
+        questionID: req.params.questionID,
+        title: req.body.option,
+      },
+    });
+    if (oldOption) {
+      req.flash("error", "Option exists already");
+      return res.redirect(
+        `/election/${req.params.electionID}/question/${req.params.questionID}`
+      );
     }
 
     try {

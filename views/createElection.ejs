@@ -24,6 +24,13 @@
           >
         </div>
         <br>
+        <div class="flex flex-col justify-center items-center gap-3 pt-4">
+          <% if (messages && messages.error && messages.error.length > 0) { %>
+            <% for(var i=0; i<messages.error.length; i++) {%>
+              <div class="bg-red-800 text-black font-semibold p-2 rounded-lg shadow"> <%= messages.error[i] %></div>
+            <% } %>
+          <% } %>
+        </div>
         <div class="pt-6">
           <p class="font-bold text-2xl text-center">Create New Election</p>
           <div class="flex justify-center">
