@@ -370,13 +370,23 @@ app.post(
       return res.json({ error: "error" });
     }
 
+    if (req.body.voterID.length === 0) {
+      req.flash("error", "Enter a voterID");
+      return res.redirect(`/election/${req.params.id}`);
+    }
+
+    if (req.body.password.length === 0) {
+      req.flash("error", "Enter a Password");
+      return res.redirect(`/election/${req.params.id}`);
+    }
+
     const voter = await Voters.findOne({
       where: { electionID: req.params.id, voterID: req.body.voterID },
     });
 
     if (voter) {
-      console.log("Voter already exists");
-      return res.json({ error: "error" });
+      req.flash("error", "VoterId exists already");
+      return res.redirect(`/election/${req.params.id}`);
     }
 
     try {
