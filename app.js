@@ -473,14 +473,8 @@ app.post("/election/:id/vote",
     });
   }
   } else{
-    res.render("votePage", {
-      election: election,
-      questions: [],
-      options: [],
-      voter: null,
-      exist: false,
-      submit: false,
-    });
+    req.flash("error", "Invalid ID or Password");
+    return res.redirect(`/election/${election.id}/vote`);
   }
   } catch (error) {
     console.log(error);
