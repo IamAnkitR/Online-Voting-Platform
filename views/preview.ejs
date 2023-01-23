@@ -15,7 +15,7 @@
       <%- include ('header') %>
     </div>
     <br>
-    <span class="bg-inherit hover:bg-teal-800 border-2  rounded-lg text-white p-2 mr-4 "><a href="/index">Home</a>
+    <span class="bg-inherit hover:bg-teal-800 border-2  rounded-lg text-white p-2 mr-4 "><a href="/election/<%= election.id %>">Go Back</a>
     </span>
     <div class="flex flex-col justify-center items-center p-4">
       <div class="flex flex-col justify-center md:w-2/5 w-full">
@@ -26,15 +26,21 @@
         <div class="flex flex-col gap-4">
             <% for (var i=0; i<questions.length; i++) { %>
                 <div>
-                    <p><b>Question</b> = <%= questions[i].title %></p>
-                    <p><b>Description</b> = <%= questions[i].description %></p>
-                    <br>
-                    <p class="text-center">Options</p>
-                    <div class="pt-2">
-                        <% for (var j=0; j<options[i].length; j++) { %>
-                                <li class="list-decimal"><%=options[i][j].title%></li>
-                        <% } %>
-                    </div>
+                  <div class="flex justify-center">
+                    <p class="font-bold text-xl">Que <%= i+1 %>. <%= questions[i].title %> <span class="font-light">[<%=
+                              questions[i].description %>]</span></p>
+                  </div>
+                    
+                  <div class="pt-6 pl-6 flex flex-col gap-4">
+                    <% for (var j=0; j<options[i].length; j++) { %>
+                      <div class="flex gap-2 justify-center">
+                        <p class="flex items-center gap-2 text-xl">
+                          <%=j+1%>.
+                          <%= options[i][j].title %>
+                        </p>
+                      </div>
+                      <% } %>
+                  </div>
                 </div>
             <% } %>
         </div>

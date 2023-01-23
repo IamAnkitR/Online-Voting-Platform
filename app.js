@@ -390,10 +390,9 @@ app.post(
     }
 
     try {
-      const hashpwd = await bcrypt.hash(req.body.password, saltRounds);
       await Voters.add(
         req.body.voterID,
-        hashpwd,
+        req.body.password,
         req.params.id
       );
       res.redirect(`/election/${req.params.id}`);
@@ -431,12 +430,11 @@ app.post("/election/:id/vote",
     const election = await Elections.findByPk(req.params.id);
 
     try {
-      const hashpwd = await bcrypt.hash(req.body.password, saltRounds);
       const voter = await Voters.findOne({
         where: {
           electionID: req.params.id,
           voterID: req.body.voterID,
-          hashpwd,
+          password: req.body.password,
         },
       });
 
