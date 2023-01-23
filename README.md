@@ -10,6 +10,8 @@ and much more. </br>
 
 <b>Application Url-- https://online-voting-platform-2du6.onrender.com </b>
 
+<b>Check out the demonstration video-- https://www.loom.com/share/81cfbce9d30b417aa6c7ed78effa957e </b>
+
 Here is a sneak peek to the application----</br>
 
 <b>You get a sign-in and sign-up page where you can register to the application.</b>
