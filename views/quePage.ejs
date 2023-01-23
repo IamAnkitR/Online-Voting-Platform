@@ -27,25 +27,28 @@
     <%- include ('header') %>
   </div>
   <br>
-  <span class="bg-inherit hover:bg-teal-800 border-2  rounded-lg text-white p-2 mr-4 "><a href="/election/<%= election.id %>">Go back</a>
+  <span class="bg-inherit hover:bg-teal-800 border-2  rounded-lg text-white p-2 mr-4 "><a
+      href="/election/<%= election.id %>">Go back</a>
   </span>
   <span class="bg-inherit hover:bg-teal-800 border-2  rounded-lg text-white p-2 "><a href="/">Sign-out</a>
   </span>
   <br>
   <br>
   <div class="flex flex-col justify-center items-center gap-3 pt-4">
-    <% if (messages && messages.error && messages.error.length > 0) { %>
+    <% if (messages && messages.error && messages.error.length> 0) { %>
       <% for(var i=0; i<messages.error.length; i++) {%>
-        <div class="bg-red-800 text-black font-semibold p-2 rounded-lg shadow"> <%= messages.error[i] %></div>
-      <% } %>
-    <% } %>
+        <div class="bg-red-800 text-black font-semibold p-2 rounded-lg shadow">
+          <%= messages.error[i] %>
+        </div>
+        <% } %>
+          <% } %>
   </div>
   <div class="flex flex-col justify-center items-center p-4">
     <div class="flex flex-col justify-center md:w-2/5 w-full">
-     
+
       <p class="text-4xl text-center font-semibold">
         <%= election.name %>
-       
+
       </p>
       <div class="flex gap-2 pt-6">
         <p class="flex items-center">Question:</p>
@@ -61,44 +64,48 @@
       </div>
 
       <% if (!election.started) { %>
-      <div>
-        <form action="/election/<%= election.id %>/questions/<%= questions.id %>/options/add" method="post"
-          class="flex flex-col md:flex-row gap-4 pt-4">
-          <div class="flex flex-col w-full">
-            <input type="text" name="option" placeholder="Option" class="bg-inherit border-2 border-black p-2 rounded-lg" />
-          </div>
-          <div class="flex justify-center items-center">
-            <button type="submit"
-              class="bg-inherit transition duration-200 border-2 border-black p-2 rounded-lg hover:bg-teal-800 px-6">
-              Add
-            </button>
-          </div>
-        </form>
-      </div>
-      <% } %>
+        <div>
+          <form action="/election/<%= election.id %>/questions/<%= questions.id %>/options/add" method="post"
+            class="flex flex-col md:flex-row gap-4 pt-4">
+            <div class="flex flex-col w-full">
+              <input type="text" name="option" placeholder="Option"
+                class="bg-inherit border-2 border-black p-2 rounded-lg" />
+            </div>
+            <div class="flex justify-center items-center">
+              <button type="submit"
+                class="bg-inherit transition duration-200 border-2 border-black p-2 rounded-lg hover:bg-teal-800 px-6">
+                Add
+              </button>
+            </div>
+          </form>
+        </div>
+        <% } %>
 
-      <p class="font-semibold pt-4 text-xl">Options</p>
-      <div class="flex flex-col justify-center items-center p-4">
-        <div class="flex flex-col gap-4 justify-center w-full p-4">
-  
-            <h1 class="text-2xl flex justify-center font-semibold">Number of options = <%=options.length%></h1>
-           
+          <p class="font-semibold pt-4 text-xl">Options</p>
+          <div class="flex flex-col justify-center items-center p-4">
+            <div class="flex flex-col gap-4 justify-center w-full p-4">
+
+              <h1 class="text-2xl flex justify-center font-semibold">Number of options = <%=options.length%>
+              </h1>
+
               <% for (var i=0; i<options.length; i++) { %>
                 <div class="flex justify-between gap-6">
                   <li class="text-xl">
                     <%= options[i].title %>
                   </li>
-                 
-                  <% if (!election.started) { %> 
-                  <div class="flex gap-4 justify-center items-center">
-                    <div onclick="deleteOption('<%= options[i].id %>')"><i
-                        class="cursor-pointer fa fa-remove transition duration-200"></i></div>
-                  </div>
-                  <% } %>
+
+                  <% if (!election.started) { %>
+                    <div class="flex gap-4 justify-center items-center">
+                      <button onclick="deleteOption('<%= options[i].id %>')"
+                        class="bg-inherit transition duration-200 border-2 border-black p-2 rounded-lg hover:bg-teal-800 px-6">
+                        Delete
+                      </button>
+                    </div>
+                    <% } %>
                 </div>
                 <% } %>
-        </div>
-      </div>
+            </div>
+          </div>
     </div>
   </div>
 </body>

@@ -8,18 +8,6 @@
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   <script>
 
-    function start(id) {
-      fetch(`/election/${id}/start`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }).then((res) => {
-        if (res.ok) {
-          window.location.reload();
-        }
-      });
-    }
     function end(id) {
       fetch(`/election/${id}/end`, {
         method: "PUT",
@@ -58,11 +46,13 @@
   </span>
   <br>
   <div class="flex flex-col justify-center items-center gap-3 pt-4">
-    <% if (messages && messages.error && messages.error.length > 0) { %>
+    <% if (messages && messages.error && messages.error.length> 0) { %>
       <% for(var i=0; i<messages.error.length; i++) {%>
-        <div class="bg-red-800 text-black font-semibold p-2 rounded-lg shadow"> <%= messages.error[i] %></div>
-      <% } %>
-    <% } %>
+        <div class="bg-red-800 text-black font-semibold p-2 rounded-lg shadow">
+          <%= messages.error[i] %>
+        </div>
+        <% } %>
+          <% } %>
   </div>
 
   <div class="flex flex-col justify-center items-center p-4">
@@ -86,10 +76,10 @@
             <div class="flex gap-10">
               <a class="p-1 rounded-lg bg-inherit border-2 border-black hover:bg-teal-800 text-white font-bold px-6"
                 href="/election/<%= election.id %>/preview">Preview</a>
-              <button onclick="start(<%= election.id %>)"
+              <a href="/election/<%= election.id %>/start"
                 class="p-1 rounded-lg bg-inherit border-2 border-black hover:bg-teal-800 text-white font-bold px-6">
                 Launch
-              </button>
+              </a>
             </div>
             <% } else { %>
               <div class="flex flex-col md:flex-row gap-4">
@@ -165,12 +155,12 @@
                     <li class="text-xl">
                       <%= voters[i].voterID %>
                     </li>
-                    <% if (!election.started) { %> 
-                    <div class="flex gap-4 justify-center items-center">
-                      <button onclick="deleteVoter(<%= election.id %>, <%= voters[i].id %>)">Delete</button>
+                    <% if (!election.started) { %>
+                      <div class="flex gap-4 justify-center items-center">
+                        <button onclick="deleteVoter(<%= election.id %>, <%= voters[i].id %>)">Delete</button>
 
-                    </div>
-                    <% } %>
+                      </div>
+                      <% } %>
                   </div>
                   <% } %>
               </div>

@@ -25,17 +25,17 @@
                     <li class="text-xl">
                         <%= questions[i].title %>
                     </li>
-                   
-                        <div class="flex gap-4 justify-center items-center">
-                            <button class="bg-inherit hover:bg-teal-800 border-2  rounded-lg text-white p-1 mr-4 ">
-                                <a href="/election/<%= election.id %>/question/<%= questions[i].id %>">Options</a>
-                            </button>
-                             <% if (!election.started) { %>
+
+                    <div class="flex gap-4 justify-center items-center">
+                        <button class="bg-inherit hover:bg-teal-800 border-2  rounded-lg text-white p-1 mr-4 ">
+                            <a href="/election/<%= election.id %>/question/<%= questions[i].id %>">Options</a>
+                        </button>
+                        <% if (!election.started) { %>
                             <button class="bg-inherit hover:bg-red-600 border-2  rounded-lg text-white p-1 mr-4 ">
                                 <div onclick="deleteQuestion('<%= questions[i].id %>')">Delete</div>
                             </button>
-                        </div>
-                        <% } %>
+                    </div>
+                    <% } %>
                 </div>
                 <% } %>
         </div>

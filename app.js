@@ -105,7 +105,7 @@ app.get("/signout", (req, res) => {
   });
 });
 
-app.get("/ballot", (req,res) => {
+app.get("/ballot", (req, res) => {
   res.render("ballot");
 })
 
@@ -150,7 +150,7 @@ app.get(
       where: { electionID: req.params.id },
     });
     const voters = await Voters.findAll({
-      where: {electionID: req.params.id},
+      where: { electionID: req.params.id },
     });
 
     res.render("ballot", {
@@ -168,7 +168,7 @@ app.get(
   async (req, res) => {
     const loggedInAdminID = req.user.id;
     const admin = await Admins.findByPk(loggedInAdminID);
-    res.render("createElection", { username: admin.name });
+    res.render("createElection", { username: admin.name});
   }
 );
 
@@ -251,23 +251,23 @@ app.get("/election/:id/vote", async (req, res) => {
     options.push(allOption);
   }
 
-  if(voter.status){
-  res.render("votePage", {
-    election: election,
-    questions: questions,
-    options: options,
-    exist: true,
-    submit: true,
-  });
-} else{
-  res.render("votePage", {
-    election: election,
-    questions: questions,
-    options: options,
-    exist: false,
-    submit: false,
-  });
-}
+  if (voter.status) {
+    res.render("votePage", {
+      election: election,
+      questions: questions,
+      options: options,
+      exist: true,
+      submit: true,
+    });
+  } else {
+    res.render("votePage", {
+      election: election,
+      questions: questions,
+      options: options,
+      exist: false,
+      submit: false,
+    });
+  }
 });
 
 app.get(
@@ -314,7 +314,7 @@ app.get(
           }
         });
 
-        array.push((count * 100) / totalVoters); 
+        array.push((count * 100) / totalVoters);
       });
 
       answer.push(array);
@@ -426,61 +426,61 @@ app.post(
 
 
 app.post("/election/:id/vote",
- async (req, res) => {
-  const election = await Elections.findByPk(req.params.id);
+  async (req, res) => {
+    const election = await Elections.findByPk(req.params.id);
 
-  try {
-    const voter = await Voters.findOne({
-      where: {
-        electionID: req.params.id,
-        voterID: req.body.voterID,
-        password: req.body.password,
-      },
-    });
-     
-    if(voter){
-    const questions = await Question.findAll({
-      where: {
-        electionID: req.params.id,
-      },
-    });
-    const options = [];
-
-    for (let i = 0; i < questions.length; i++) {
-      const allOption = await Options.findAll({
-        where: { questionID: questions[i].id },
+    try {
+      const voter = await Voters.findOne({
+        where: {
+          electionID: req.params.id,
+          voterID: req.body.voterID,
+          password: req.body.password,
+        },
       });
-      options.push(allOption);
+
+      if (voter) {
+        const questions = await Question.findAll({
+          where: {
+            electionID: req.params.id,
+          },
+        });
+        const options = [];
+
+        for (let i = 0; i < questions.length; i++) {
+          const allOption = await Options.findAll({
+            where: { questionID: questions[i].id },
+          });
+          options.push(allOption);
+        }
+
+        if (voter.status) {
+          res.render("votePage", {
+            election: election,
+            questions: questions,
+            options: options,
+            voter: voter,
+            exist: true,
+            submit: true,
+          });
+        } else {
+          res.render("votePage", {
+            election: election,
+            questions: questions,
+            options: options,
+            voter: voter,
+            exist: true,
+            submit: false,
+          });
+        }
+      } else {
+        req.flash("error", "Invalid ID or Password");
+        return res.redirect(`/election/${election.id}/vote`);
+      }
+    } catch (error) {
+      console.log(error);
+      return res.send(error);
     }
-  
-    if(voter.status){
-    res.render("votePage", {
-      election: election,
-      questions: questions,
-      options: options,
-      voter: voter,
-      exist:true,
-      submit:true,
-    });
-  }  else {
-    res.render("votePage", {
-      election: election,
-      questions: questions,
-      options: options,
-      voter: voter,
-      exist: true,
-      submit: false,
-    });
-  }
-  } else{
-    req.flash("error", "Invalid ID or Password");
-    return res.redirect(`/election/${election.id}/vote`);
-  }
-  } catch (error) {
-    console.log(error);
-    return res.send(error);
-  }
-});
+  });
 
 
 app.post(
@@ -490,7 +490,7 @@ app.post(
 
     try {
       const voter = await Voters.findByPk(req.params.id);
-      
+
       const questions = await Question.findAll({
         where: {
           electionID: req.params.electionID,
@@ -523,11 +523,10 @@ app.post(
   }
 );
 
-app.put(
+app.get(
   "/election/:id/start",
   connectEnsureLogin.ensureLoggedIn(),
   async (req, res) => {
-    console.log("Election started");
     const adminID = req.user.id;
     const election = await Elections.findByPk(req.params.id);
     if (election.adminID !== adminID) {
@@ -545,9 +544,9 @@ app.put(
       const options = await Options.findAll({
         where: { questionID: questions[i].id },
       });
-      if (options.length < 1) {
+      if (options.length < 2) {
         req.flash("error", "Please add minimum 2 options");
-      return res.redirect(`/election/${req.params.id}`);
+        return res.redirect(`/election/${req.params.id}`);
       }
     }
 
@@ -560,9 +559,8 @@ app.put(
     }
 
     try {
-      console.log("test passed");
       await Elections.start(req.params.id);
-      return res.json({ ok: true });
+      return res.redirect(`/election/${req.params.id}`);
     } catch (error) {
       console.log(error);
       return res.send(error);
@@ -671,7 +669,7 @@ app.post(
   connectEnsureLogin.ensureLoggedIn(),
   async (req, res) => {
     if (!req.body.name) {
-      req.flash("error","Enter election name!");
+      req.flash("error", "Enter election name!");
       return res.redirect("/elections/create");
     }
 
@@ -714,7 +712,7 @@ app.post("/users", async (req, res) => {
 
   const admins = await Admins.findOne({ where: { email: req.body.email } });
   if (admins) {
-    req.flash( "error","Email already exists");
+    req.flash("error", "Email already exists");
     return res.redirect("/signup");
   }
   const hashpwd = await bcrypt.hash(req.body.password, saltRounds);

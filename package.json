@@ -33,7 +33,8 @@
     "passport-local": "^1.0.0",
     "pg": "^8.8.0",
     "pg-hstore": "^2.3.4",
-    "sequelize": "^6.28.0"
+    "sequelize": "^6.28.0",
+    "tiny-csrf": "^1.1.3"
   },
   "devDependencies": {
     "eslint": "^8.31.0",
