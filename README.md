@@ -1,4 +1,15 @@
 # Online-Voting-Platform
+It is an Online-Voting-Platform which can be used to conduct various elections.
+Here you get the functionalities of 
+1). Create an election
+2). Create multiple questions for an election
+3). Add options for each question
+4). Add Voters who can vote in that election
+5). Vote in an election 
+and much more.
+
+Here is a sneak peek to the application----
+
 ![image](https://user-images.githubusercontent.com/104831310/214072838-12b82456-560b-4fb5-86ac-541c8b6f6222.png)
 ![image](https://user-images.githubusercontent.com/104831310/214073173-7d59fc93-46f1-45fd-9625-b2d43ad128f1.png)
 ![image](https://user-images.githubusercontent.com/104831310/214073027-abd08e37-317e-40fa-871b-36bee8a5f81a.png)
@@ -11,4 +22,7 @@
 ![image](https://user-images.githubusercontent.com/104831310/214075207-3b701400-b12d-4de2-ab08-4dc1f044c9f8.png)
 ![image](https://user-images.githubusercontent.com/104831310/214075352-34f527bd-dcce-43b9-aca0-c09cb2a2e336.png)
 ![image](https://user-images.githubusercontent.com/104831310/214075447-ba158c00-faa6-445a-aa09-fbf0e755a623.png)
+![image](https://user-images.githubusercontent.com/104831310/214075897-f3575b51-84b6-4e3b-8ba5-abec4aaf56f9.png)
+![image](https://user-images.githubusercontent.com/104831310/214075789-68ac309f-cd25-4518-a98e-aee0d9d6f53b.png)
+
 
